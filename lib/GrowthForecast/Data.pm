@@ -19,89 +19,9 @@ sub new {
     bless { root_dir => $root_dir }, $class;
 }
 
-my $_on_connect = sub {
-    my $dbh = shift;
-    $dbh->do(<<EOF);
-CREATE TABLE IF NOT EXISTS graphs (
-    id           INTEGER NOT NULL PRIMARY KEY,
-    service_name VARCHAR(255) NOT NULL,
-    section_name VARCHAR(255) NOT NULL,
-    graph_name   VARCHAR(255) NOT NULL,
-    number       INT NOT NULL DEFAULT 0,
-    mode         VARCHAR(255) NOT NULL DEFAULT 'gauge',
-    description  VARCHAR(255) NOT NULL DEFAULT '',
-    sort         UNSIGNED INT NOT NULL DEFAULT 0,
-    gmode        VARCHAR(255) NOT NULL DEFAULT 'gauge',
-    color        VARCHAR(255) NOT NULL DEFAULT '#00CC00',
-    ulimit       INT NOT NULL DEFAULT 1000000000,
-    llimit       INT NOT NULL DEFAULT 0,
-    sulimit       INT NOT NULL DEFAULT 100000,
-    sllimit       INT NOT NULL DEFAULT 0,
-    type         VARCHAR(255) NOT NULL DEFAULT 'AREA',
-    stype         VARCHAR(255) NOT NULL DEFAULT 'AREA',
-    meta         TEXT NOT NULL DEFAULT '',
-    created_at   UNSIGNED INT NOT NULL,
-    updated_at   UNSIGNED INT NOT NULL,
-    UNIQUE  (service_name, section_name, graph_name)
-)
-EOF
-
-    $dbh->begin_work;
-    my $columns = $dbh->select_all(q{PRAGMA table_info("graphs")});
-    my %graphs_columns;
-    $graphs_columns{$_->{name}} = 1 for @$columns;
-    if ( ! exists $graphs_columns{mode} ) {
-        infof("add new column 'mode'");
-        $dbh->do(q{ALTER TABLE graphs ADD mode VARCHAR(255) NOT NULL DEFAULT 'gauge'});
-        $dbh->query(q{UPDATE graphs SET mode='-'});
-    }
-    $dbh->commit;
-
-    $dbh->do(<<EOF);
-CREATE TABLE IF NOT EXISTS prev_graphs (
-    graph_id     INT NOT NULL,
-    number       INT NOT NULL DEFAULT 0,
-    subtract     INT,
-    updated_at   UNSIGNED INT NOT NULL,
-    PRIMARY KEY  (graph_id)
-)
-EOF
-
-    $dbh->do(<<EOF);
-CREATE TABLE IF NOT EXISTS prev_short_graphs (
-    graph_id     INT NOT NULL,
-    number       INT NOT NULL DEFAULT 0,
-    subtract     INT,
-    updated_at   UNSIGNED INT NOT NULL,
-    PRIMARY KEY  (graph_id)
-)
-EOF
-
-    $dbh->do(<<EOF);
-CREATE TABLE IF NOT EXISTS complex_graphs (
-    id           INTEGER NOT NULL PRIMARY KEY,
-    service_name VARCHAR(255) NOT NULL,
-    section_name VARCHAR(255) NOT NULL,
-    graph_name   VARCHAR(255) NOT NULL,
-    number       INT NOT NULL DEFAULT 0,
-    description  VARCHAR(255) NOT NULL DEFAULT '',
-    sort         UNSIGNED INT NOT NULL DEFAULT 0,
-    meta         TEXT NOT NULL DEFAULT '',
-    created_at   UNSIGNED INT NOT NULL,
-    updated_at   UNSIGNED INT NOT NULL,
-    UNIQUE  (service_name, section_name, graph_name)
-)
-EOF
-    return;
-};
-
 sub dbh {
     my $self = shift;
-    $self->{dbh} ||= DBIx::Sunny->connect_cached('dbi:SQLite:dbname='.$self->{root_dir}.'/data/gforecast.db','','',{
-        sqlite_use_immediate_transaction => 1,
-        Callbacks => {
-            connected => $_on_connect,
-        },        
+    $self->{dbh} ||= DBIx::Sunny->connect_cached('dbi:mysql:dbname=growthforecast','nobody','nobody',{
     });
     $self->{dbh};
 }
