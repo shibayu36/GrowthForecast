@@ -15,6 +15,7 @@ WriteMakefile(
         'Starlet' => '0.14',
         'Parallel::Scoreboard' => '0.03',
         'Plack::Builder::Conditionals' => '0.03',
+        'DBD::mysql' => 0,
     },
     MIN_PERL_VERSION => '5.008001',
 );
