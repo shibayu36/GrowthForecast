@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS graphs (
     `created_at`   INT UNSIGNED NOT NULL,
     `updated_at`   INT UNSIGNED NOT NULL,
     UNIQUE  (service_name, section_name, graph_name)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS prev_graphs (
     `graph_id`     INT NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS prev_short_graphs (
     `subtract`     INT,
     `updated_at`   INT UNSIGNED NOT NULL,
     PRIMARY KEY  (graph_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS complex_graphs (
     `id`           INTEGER NOT NULL PRIMARY KEY,
@@ -49,4 +49,4 @@ CREATE TABLE IF NOT EXISTS complex_graphs (
     `created_at`   INT UNSIGNED NOT NULL,
     `updated_at`   INT UNSIGNED NOT NULL,
     UNIQUE  (service_name, section_name, graph_name)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
