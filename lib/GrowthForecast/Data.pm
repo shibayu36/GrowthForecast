@@ -23,6 +23,7 @@ sub new {
 sub dbh {
     my $self = shift;
     local $Scope::Container::DBI::DBI_CLASS = 'DBIx::Sunny';
+    warn '=============================';
     Scope::Container::DBI->connect(
         'dbi:mysql:dbname=growthforecast',
         'nobody',
