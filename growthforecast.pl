@@ -90,7 +90,7 @@ while ($pm->signal_received ne 'TERM' ) {
             $scoreboard->update('short_worker');
             my $worker = GrowthForecast::Worker->new($root_dir);
             $worker->run('short');
-        }            
+        }
         else {
             local $0 = "$0 (GrowthForecast::Worker)";
             $scoreboard->update('worker');

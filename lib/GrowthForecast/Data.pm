@@ -21,7 +21,9 @@ sub new {
 
 sub dbh {
     my $self = shift;
-    $self->{dbh} ||= DBIx::Sunny->connect('dbi:mysql:dbname=growthforecast','nobody','nobody',{
+    $self->{dbh} ||= DBIx::Sunny->connect_cached('dbi:mysql:dbname=growthforecast','nobody','nobody',{
+        RaiseError => 1,
+        mysql_auto_reconnect => 1,
     });
     $self->{dbh};
 }
