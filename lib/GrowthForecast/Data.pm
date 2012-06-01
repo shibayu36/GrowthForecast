@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use utf8;
 use DBIx::Sunny;
+use Scope::Container::DBI;
 use Time::Piece;
 use Digest::MD5 qw/md5_hex/;
 use List::Util;
@@ -21,11 +22,12 @@ sub new {
 
 sub dbh {
     my $self = shift;
-    $self->{dbh} ||= DBIx::Sunny->connect_cached('dbi:mysql:dbname=growthforecast','nobody','nobody',{
-        RaiseError => 1,
-        mysql_auto_reconnect => 1,
-    });
-    $self->{dbh};
+    local $Scope::Container::DBI::DBI_CLASS = 'DBIx::Sunny';
+    Scope::Container::DBI->connect(
+        'dbi:mysql:dbname=growthforecast',
+        'nobody',
+        'nobody',
+    );
 }
 
 sub inflate_row {
