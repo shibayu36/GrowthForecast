@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS graphs (
-    `id`           INTEGER NOT NULL PRIMARY KEY,
+    `id`           INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `service_name` VARCHAR(255) NOT NULL,
     `section_name` VARCHAR(255) NOT NULL,
     `graph_name`   VARCHAR(255) NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS prev_graphs (
     `number`       INT NOT NULL DEFAULT 0,
     `subtract`     INT,
     `updated_at`   INT UNSIGNED NOT NULL,
-    `PRIMARY` KEY  (graph_id)
+    PRIMARY KEY  (graph_id)
 );
 
 CREATE TABLE IF NOT EXISTS prev_short_graphs (
