@@ -23,7 +23,8 @@ sub data {
 
 sub rrd {
     my $self = shift;
-    $self->{__rrd} ||= GrowthForecast::RRD->new($self->{root_dir});
+    my $rrd_root = GrowthForecast->config->{rrd_root} || $self->root_dir;
+    $self->{__rrd} ||= GrowthForecast::RRD->new($rrd_root);
     $self->{__rrd};
 }
 

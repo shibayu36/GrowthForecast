@@ -13,6 +13,7 @@ use Parallel::Scoreboard;
 use Plack::Loader;
 use Plack::Builder;
 use Plack::Builder::Conditionals;
+use Log::Minimal;
 use GrowthForecast::Web;
 use GrowthForecast::Worker;
 
@@ -28,12 +29,24 @@ GetOptions(
     'allow-from=s' => \@allow_from,
     'disable-1min-metrics' => \my $disable_short,
     "h|help" => \my $help,
+    "c|config=s" => \my $config_file,
 );
 
-if ( $help ) {
-    print "usage: $0 --port 5005 --host 127.0.0.1 --front-proxy 127.0.0.1 --allow-from 127.0.0.1 --disable-1min-metrics\n";
+if ( $help || !$config_file) {
+    print "usage: $0 --port 5005 --host 127.0.0.1 --front-proxy 127.0.0.1 --allow-from 127.0.0.1 --config config.pl --disable-1min-metrics\n";
     exit(1);
 }
+
+my $config;
+{
+    $config = do $config_file;
+    croakf "%s: %s", $config_file, $@ if $@;
+    croakf "%s: %s", $config_file, $! if $!;
+    croakf "%s does not return hashref", $config_file if ref($config) ne 'HASH';
+}
+
+local $GrowthForecast::CONFIG = $config;
+debugf('dump config:%s',$config);
 
 my $enable_short = $disable_short ? 0 : 1;
 my $root_dir = File::Basename::dirname(__FILE__);
