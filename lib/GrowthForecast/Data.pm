@@ -79,7 +79,7 @@ sub get_by_id_for_rrdupdate_short {
     $dbh->begin_work;
     my $subtract;
     my $prev = $dbh->select_row(
-        'SELECT * FROM prev_short_graphs WHERE graph_id = ?',
+        'SELECT * FROM prev_short_graphs WHERE graph_id = ? FOR UPDATE',
         $data->{id}
     );
     if ( !$prev ) {
@@ -124,7 +124,7 @@ sub get_by_id_for_rrdupdate {
     my $subtract;
 
     my $prev = $dbh->select_row(
-        'SELECT * FROM prev_graphs WHERE graph_id = ?',
+        'SELECT * FROM prev_graphs WHERE graph_id = ? FOR UPDATE',
         $data->{id}
     );
     
@@ -162,7 +162,10 @@ sub update {
     my $dbh = $self->dbh;
     $dbh->begin_work;
 
-    my $data = $self->get($service, $section, $graph);
+    my $data = $self->dbh->select_row(
+        'SELECT * FROM graphs WHERE service_name = ? AND section_name = ? AND graph_name = ? FOR UPDATE',
+        $service, $section, $graph
+    );
     if ( defined $data ) {
         if ( $mode eq 'count' ) {
             $number += $data->{number};
@@ -187,7 +190,7 @@ sub update {
     my $row = $self->get($service, $section, $graph);
     $dbh->commit;
 
-    $row;
+    $self->inflate_row($row);
 }
 
 sub update_graph {
