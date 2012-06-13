@@ -8,6 +8,7 @@ use GrowthForecast::Data;
 use GrowthForecast::RRD;
 use Log::Minimal;
 use POSIX ":sys_wait_h";
+use Scope::Container;
 
 sub new {
     my $class = shift;
@@ -82,6 +83,7 @@ sub run {
             next if $pid; #main process
 
             #child process
+            my $container = start_scope_container();
             my $all_rows = $self->data->get_all_graph_id;
             for my $row ( @$all_rows ) {
                 debugf( "[%s] update %s", $method, $row);

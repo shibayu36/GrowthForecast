@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS prev_short_graphs (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS complex_graphs (
-    `id`           INTEGER NOT NULL PRIMARY KEY,
+    `id`           INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `service_name` VARCHAR(255) NOT NULL,
     `section_name` VARCHAR(255) NOT NULL,
     `graph_name`   VARCHAR(255) NOT NULL,
